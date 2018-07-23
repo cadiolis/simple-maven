@@ -4,8 +4,8 @@ node {
     stage('Prep') {
 		checkout scm
 
-		commitId = OsTools.runSafe(this, 'git rev-parse HEAD')
-		def commitDate = OsTools.runSafe(this, "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}")
+		commitId = sh 'git rev-parse HEAD'
+		def commitDate = sh "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}"
 
 		def pom = readMavenPom(file: 'pom.xml')
 		version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
