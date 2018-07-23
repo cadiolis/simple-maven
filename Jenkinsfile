@@ -53,10 +53,9 @@ node {
 
     // create raw component
     DefaultComponent rawComponent = new DefaultComponent('raw')
-    rawComponent.addAttribute('directory', '/foo')
+    rawComponent.addAttribute('directory', '/depshield')
     rawComponent.addAsset(rawAsset)
 
-    client.upload('depshield-raw-incoming', rawComponent)
-    // client.upload('raw-hosted', rawComponent, 'my-raw-tag-name')
+    client.upload('depshield-raw-incoming', rawComponent, tag)
   }
 }
