@@ -1,8 +1,12 @@
 import java.nio.file.Files
 import java.nio.file.Paths
 
-import com.sonatype.nexus.api.common.*
-import com.sonatype.nexus.api.repository.v3.*
+import com.sonatype.nexus.api.common.Authentication
+import com.sonatype.nexus.api.common.ServerConfig
+import com.sonatype.nexus.api.repository.v3.DefaultAsset
+import com.sonatype.nexus.api.repository.v3.DefaultComponent
+import com.sonatype.nexus.api.repository.v3.RepositoryManagerV3Client
+import com.sonatype.nexus.api.repository.v3.RepositoryManagerV3ClientBuilder
 
 node {
   def commitId, tag, commitDate
@@ -31,18 +35,20 @@ node {
   }
   stage('Publish') {
     // push jar
-    /*
-    nexusPublisher nexusInstanceId: 'nxrm3', nexusRepositoryId: 'maven-releases',
-        packages: [[$class                            : 'MavenPackage', mavenAssetList: [[classifier: '', extension:
-            '', filePath:
+    nexusPublisher nexusInstanceId: 'nxrm3', nexusRepositoryId: 'test-maven-incoming',
+        packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath:
             'target/my-app-1.0.jar']], mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app',
-                                                         packaging : 'jar', version: '1.0']]],
+                                                         packaging: 'jar', version: '1.0']]],
         tagName: tag
-        */
 
-    echo "WORKSPACE: $WORKSPACE"
+    input 'Deployed to incoming. Promote to staging?'
+    moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', tagName: tag
 
-    // push rar (manual use of nexus-java-api)
+    input 'Deployed to staging. Promote to production?'
+    moveComponents destination: 'test-maven-production', nexusInstanceId: 'nxrm3', tagName: tag
+
+    /*
+    // push raw (manual use of nexus-java-api)
     ServerConfig config = new ServerConfig(new URI('http://localhost:8081'), new Authentication('admin', 'admin123'))
     RepositoryManagerV3Client client = RepositoryManagerV3ClientBuilder.create().withServerConfig(config).build()
 
@@ -57,5 +63,6 @@ node {
     rawComponent.addAsset(rawAsset)
 
     client.upload('depshield-raw-incoming', rawComponent, tag)
+    */
   }
 }
