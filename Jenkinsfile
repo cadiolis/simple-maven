@@ -1,0 +1,27 @@
+node {
+	def commitId
+
+    stage('Prep') {
+		checkout scm
+
+		commitId = OsTools.runSafe(this, 'git rev-parse HEAD')
+		def commitDate = OsTools.runSafe(this, "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}")
+
+		def pom = readMavenPom(file: 'pom.xml')
+		version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
+
+		currentBuild.displayName = "#${currentBuild.number} - ${version}"
+	}
+	stage('Build') {
+		withMaven(jdk: 'JDK8u121', maven: 'M3', mavenSettingsConfig: 'private-settings.xml') {
+			sh "mvn clean package"
+		}
+	}
+    stage('Example') {
+        if (env.BRANCH_NAME == 'master') {
+            echo 'I only execute on the master branch'
+        } else {
+            echo 'I execute elsewhere'
+        }
+    }
+}
