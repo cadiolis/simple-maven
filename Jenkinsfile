@@ -42,7 +42,7 @@ node {
     def response = sh returnStdout: true, script: """curl -s -u admin:admin123 \
 	-X POST 'http://localhost:8081/service/rest/v1/components?repository=depshield-raw-incoming' \
 	-F raw.directory=depshield \
-	-F raw.asset1=@assembly/target/my-app-1.0-depshield.tar.gz \
+	-F raw.asset1=@target/my-app-1.0-depshield.tar.gz \
 	-F raw.asset1.filename=myapp-1.0-depshield.tar.gz \
 	-F raw.tag=$tag"""
     echo "RESPONSE: $response"
