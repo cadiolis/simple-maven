@@ -1,14 +1,15 @@
 node {
-	def commitId, version
+	def commitId, tag, commitDate
 
     stage('Prep') {
 		checkout scm
 
 		commitId = sh (script: 'git rev-parse HEAD', returnStdout: true)
-		def commitDate = sh(script: "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}", returnStdout: true).trim()
+		commitDate = sh(script: "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}", returnStdout: true).trim()
 
 		def pom = readMavenPom(file: 'pom.xml')
-		version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
+		def version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
+		tag = "depshield-$version"
 
 		currentBuild.displayName = "#${currentBuild.number} - ${version}"
 	}
@@ -18,7 +19,7 @@ node {
 		}
 	}
 	stage('Creating tag') {
-        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: "$version"
+        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: "{'createdBy' : '$BUILD_USER', 'createdOn' : '$commitDate'}", tagName: "$tag"
 	}
     stage('Example') {
         if (env.BRANCH_NAME == 'master') {
