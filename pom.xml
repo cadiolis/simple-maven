@@ -24,4 +24,26 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptors>
+            <descriptor>src/assembly/depshield.xml</descriptor>
+          </descriptors>
+        </configuration>
+
+      </plugin>
+    </plugins>
+  </build>
 </project>
