@@ -5,15 +5,10 @@ node {
 		checkout scm
 
 		commitId = sh (script: 'git rev-parse HEAD', returnStdout: true)
-		echo "commitId: '$commitId'"
-		echo "commitId: '${commitId.substring(0,7)}'"
 		def commitDate = sh(script: "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}", returnStdout: true).trim()
-		echo "commitDate: '$commitDate'"
 
 		def pom = readMavenPom(file: 'pom.xml')
-		echo "pom.version: '${pom.version}'"
 		version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
-		echo "version: '$version'"
 
 		currentBuild.displayName = "#${currentBuild.number} - ${version}"
 	}
@@ -23,8 +18,7 @@ node {
 		}
 	}
 	stage('Creating tag') {
-		echo "VERSION: '$version'"
-        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: "'$version'"
+        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: "$version"
 	}
     stage('Example') {
         if (env.BRANCH_NAME == 'master') {
