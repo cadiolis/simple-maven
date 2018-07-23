@@ -5,7 +5,10 @@ node {
 		checkout scm
 
 		commitId = sh (script: 'git rev-parse HEAD', returnStdout: true)
+		echo "commitId: '$commitId'"
+		echo "commitId: '${commitId.substring(0,7)}'"
 		def commitDate = sh (script: "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}", returnStdout: true)
+		echo "commitDate: '$commitDate'"
 
 		def pom = readMavenPom(file: 'pom.xml')
 		version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
@@ -18,7 +21,7 @@ node {
 		}
 	}
 	stage('Creating tag') {
-		echo "VERSION: $version"
+		echo "VERSION: '$version'"
 		echo version
         createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: "$version"
 	}
