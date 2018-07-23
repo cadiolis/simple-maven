@@ -1,13 +1,3 @@
-import java.nio.file.Files
-import java.nio.file.Paths
-
-import com.sonatype.nexus.api.common.Authentication
-import com.sonatype.nexus.api.common.ServerConfig
-import com.sonatype.nexus.api.repository.v3.DefaultAsset
-import com.sonatype.nexus.api.repository.v3.DefaultComponent
-import com.sonatype.nexus.api.repository.v3.RepositoryManagerV3Client
-import com.sonatype.nexus.api.repository.v3.RepositoryManagerV3ClientBuilder
-
 node {
   def commitId, tag, commitDate
 
@@ -19,7 +9,13 @@ node {
         sh(script: "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}", returnStdout: true).trim()
 
     def pom = readMavenPom(file: 'pom.xml')
-    def version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
+    def version
+    if (pom.version.contains('-SNAPSHOT')) {
+      version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
+    }
+    else {
+      version = pom.version + ".${commitDate}.${commitId.substring(0, 7)}"
+    }
     tag = "depshield-$version"
 
     currentBuild.displayName = "#${currentBuild.number} - ${version}"
@@ -36,9 +32,10 @@ node {
   stage('Publish') {
     // push jar
     nexusPublisher nexusInstanceId: 'nxrm3', nexusRepositoryId: 'test-maven-incoming',
-        packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath:
-            'target/my-app-1.0-SNAPSHOT.jar']], mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app',
-                                                         packaging: 'jar', version: '1.0-SNAPSHOT']]],
+        packages: [[$class                            : 'MavenPackage', mavenAssetList: [[classifier: '', extension:
+            '', filePath:
+            'target/my-app-1.0.jar']], mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app',
+                                                         packaging : 'jar', version: '1.0']]],
         tagName: tag
 
     input 'Deployed to incoming. Promote to staging?'
