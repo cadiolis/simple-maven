@@ -1,5 +1,5 @@
 node {
-	def commitId
+	def commitId, version
 
     stage('Prep') {
 		checkout scm
@@ -18,7 +18,7 @@ node {
 		}
 	}
 	stage('Creating tag') {
-        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: 'build-125'
+        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: version
 	}
     stage('Example') {
         if (env.BRANCH_NAME == 'master') {
