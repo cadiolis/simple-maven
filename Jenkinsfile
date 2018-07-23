@@ -7,10 +7,11 @@ node {
 		commitId = sh (script: 'git rev-parse HEAD', returnStdout: true)
 		echo "commitId: '$commitId'"
 		echo "commitId: '${commitId.substring(0,7)}'"
-		def commitDate = sh (script: "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}", returnStdout: true)
+		def commitDate = sh(script: "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}", returnStdout: true).trim()
 		echo "commitDate: '$commitDate'"
 
 		def pom = readMavenPom(file: 'pom.xml')
+		echo "pom.version: '${pom.version}'"
 		version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
 		echo "version: '$version'"
 
