@@ -17,6 +17,9 @@ node {
 			sh "mvn clean package"
 		}
 	}
+	stage('Creating tag') {
+        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: 'build-125'
+	}
     stage('Example') {
         if (env.BRANCH_NAME == 'master') {
             echo 'I only execute on the master branch'
