@@ -1,12 +1,8 @@
 import java.nio.file.Files
 import java.nio.file.Paths
 
-import com.sonatype.nexus.api.common.Authentication
-import com.sonatype.nexus.api.common.ServerConfig
-import com.sonatype.nexus.api.repository.v3.DefaultAsset
-import com.sonatype.nexus.api.repository.v3.DefaultComponent
-import com.sonatype.nexus.api.repository.v3.RepositoryManagerV3Client
-import com.sonatype.nexus.api.repository.v3.RepositoryManagerV3ClientBuilder
+import com.sonatype.nexus.api.common.*
+import com.sonatype.nexus.api.repository.v3.*
 
 node {
   def commitId, tag, commitDate
