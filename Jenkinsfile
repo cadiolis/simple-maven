@@ -12,6 +12,7 @@ node {
 
 		def pom = readMavenPom(file: 'pom.xml')
 		version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
+		echo "version: '$version'"
 
 		currentBuild.displayName = "#${currentBuild.number} - ${version}"
 	}
@@ -22,8 +23,7 @@ node {
 	}
 	stage('Creating tag') {
 		echo "VERSION: '$version'"
-		echo version
-        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: "$version"
+        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: "'$version'"
 	}
     stage('Example') {
         if (env.BRANCH_NAME == 'master') {
