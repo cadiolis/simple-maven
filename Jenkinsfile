@@ -37,8 +37,8 @@ node {
     // push jar
     nexusPublisher nexusInstanceId: 'nxrm3', nexusRepositoryId: 'test-maven-incoming',
         packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath:
-            'target/my-app-1.0.jar']], mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app',
-                                                         packaging: 'jar', version: '1.0']]],
+            'target/my-app-1.0-SNAPSHOT.jar']], mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app',
+                                                         packaging: 'jar', version: '1.0-SNAPSHOT']]],
         tagName: tag
 
     input 'Deployed to incoming. Promote to staging?'
