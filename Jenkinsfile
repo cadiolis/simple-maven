@@ -13,7 +13,8 @@ node {
 		currentBuild.displayName = "#${currentBuild.number} - ${version}"
 	}
 	stage('Build') {
-		withMaven(jdk: 'JDK8u121', maven: 'M3', mavenSettingsConfig: 'private-settings.xml') {
+		echo "HERE"
+		withMaven(jdk: 'JDK8u172', maven: 'M3', mavenSettingsConfig: 'private-settings.xml') {
 			sh "mvn clean package"
 		}
 	}
