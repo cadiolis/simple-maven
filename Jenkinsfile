@@ -19,13 +19,9 @@ node {
 		}
 	}
 	stage('Creating tag') {
-        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: "{'createdBy' : 'todo', 'createdOn' : '$commitDate'}", tagName: "$tag"
+        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: "{'createdBy' : 'todo', 'hash' : '$commitId'}", tagName: "$tag"
 	}
-    stage('Example') {
-        if (env.BRANCH_NAME == 'master') {
-            echo 'I only execute on the master branch'
-        } else {
-            echo 'I execute elsewhere'
-        }
+    stage('Publish') {
+		nexusPublisher nexusInstanceId: 'nxrm3', nexusRepositoryId: 'maven-snapshots', packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension: '', filePath: 'target/my-app-1.0-SNAPSHOT.jar']], mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app', packaging: 'jar', version: '1.0-SNAPSHOT']]], tagName: tag
     }
 }
