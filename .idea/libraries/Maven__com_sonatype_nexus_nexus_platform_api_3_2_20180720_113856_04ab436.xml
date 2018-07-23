@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.sonatype.nexus:nexus-platform-api:3.2.20180720-113856.04ab436">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sonatype/nexus/nexus-platform-api/3.2.20180720-113856.04ab436/nexus-platform-api-3.2.20180720-113856.04ab436.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sonatype/nexus/nexus-platform-api/3.2.20180720-113856.04ab436/nexus-platform-api-3.2.20180720-113856.04ab436-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/sonatype/nexus/nexus-platform-api/3.2.20180720-113856.04ab436/nexus-platform-api-3.2.20180720-113856.04ab436-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
