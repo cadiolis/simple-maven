@@ -19,8 +19,8 @@ node {
 	}
 	stage('Creating tag') {
 		echo "VERSION: $version"
-		echo $version
-        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: $version
+		echo version
+        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: '{"createdBy" : "JohnSmith"}', tagName: version
 	}
     stage('Example') {
         if (env.BRANCH_NAME == 'master') {
