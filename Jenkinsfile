@@ -32,20 +32,23 @@ node {
   stage('Publish') {
     // push jar
     nexusPublisher nexusInstanceId: 'nxrm3', nexusRepositoryId: 'test-maven-incoming',
-        packages: [[$class                            : 'MavenPackage', mavenAssetList: [[classifier: '', extension:
-            '', filePath:
-            'target/my-app-1.0.jar']], mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app',
-                                                         packaging : 'jar', version: '1.0']]],
+        packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension:
+            '', filePath                                                :
+                                                                  'target/my-app-1.0.jar']], mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app',
+
+                                                                                                               packaging : 'jar', version: '1.0']]],
         tagName: tag
 
-    input 'Deployed to incoming. Promote to staging?'
-    moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', tagName: tag
-
-    input 'Deployed to staging. Promote to production?'
-    moveComponents destination: 'test-maven-production', nexusInstanceId: 'nxrm3', tagName: tag
-
+    // push raw using curl like a boss
+    def response = sh returnStdout: true, script: """curl -k -v -u admin:admin123 \
+	-X POST 'http://localhost:8081/service/rest/v1/components?repository=depshield-raw-incoming' \
+	-F raw.directory=depshield \
+	-F raw.asset1=@assembly/target/my-app-1.0-depshield.tar.gz \
+	-F raw.asset1.filename=myapp-1.0-depshield.tar.gz \
+	-F raw.tag=$tag"""
+    echo "RESPONSE: $response"
     /*
-    // push raw (manual use of nexus-java-api)
+    // push raw and tag (manual use of nexus-java-api)
     ServerConfig config = new ServerConfig(new URI('http://localhost:8081'), new Authentication('admin', 'admin123'))
     RepositoryManagerV3Client client = RepositoryManagerV3ClientBuilder.create().withServerConfig(config).build()
 
@@ -61,5 +64,16 @@ node {
 
     client.upload('depshield-raw-incoming', rawComponent, tag)
     */
+  }
+  stage('Staging') {
+
+    input 'Deployed to incoming. Promote to staging?'
+    moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', tagName: tag
+  }
+
+  stage('Production') {
+    input 'Deployed to staging. Promote to production?'
+    moveComponents destination: 'test-maven-production', nexusInstanceId: 'nxrm3', tagName: tag
+
   }
 }
