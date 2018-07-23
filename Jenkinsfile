@@ -19,7 +19,7 @@ node {
 		}
 	}
 	stage('Creating tag') {
-        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: "{'createdBy' : '$BUILD_USER', 'createdOn' : '$commitDate'}", tagName: "$tag"
+        createTag nexusInstanceId: 'nxrm3', tagAttributesJson: "{'createdBy' : 'todo', 'createdOn' : '$commitDate'}", tagName: "$tag"
 	}
     stage('Example') {
         if (env.BRANCH_NAME == 'master') {
