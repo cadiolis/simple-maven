@@ -32,15 +32,14 @@ node {
   stage('Publish') {
     // push jar
     nexusPublisher nexusInstanceId: 'nxrm3', nexusRepositoryId: 'test-maven-incoming',
-        packages: [[$class: 'MavenPackage', mavenAssetList: [[classifier: '', extension:
-            '', filePath                                                :
-                                                                  'target/my-app-1.0.jar']], mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app',
-
-                                                                                                               packaging : 'jar', version: '1.0']]],
+        packages: [[$class: 'MavenPackage', mavenAssetList: [[ classifier: '', extension:
+            '', filePath: 'target/my-app-1.0.jar']],
+                    mavenCoordinate: [artifactId: 'my-app', groupId: 'com.mycompany.app',
+                                      packaging : 'jar', version: '1.0']]],
         tagName: tag
 
     // push raw using curl like a boss
-    def response = sh returnStdout: true, script: """curl -k -v -u admin:admin123 \
+    def response = sh returnStdout: true, script: """curl -s -u admin:admin123 \
 	-X POST 'http://localhost:8081/service/rest/v1/components?repository=depshield-raw-incoming' \
 	-F raw.directory=depshield \
 	-F raw.asset1=@assembly/target/my-app-1.0-depshield.tar.gz \
