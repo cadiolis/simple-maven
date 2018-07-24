@@ -70,7 +70,7 @@ node {
         println("Content: " + response.content)
     }
 
-    def json = [tag: tag, sha1: sha1]
+    def json = "{'tag': '${tag}'}"
     writeJSON file: 'build-info.json', json: json
     archiveArtifacts artifacts: 'build-info.json', onlyIfSuccessful: true
   }
