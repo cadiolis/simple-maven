@@ -1,11 +1,13 @@
 node {
   properties([
       parameters([
-          string(name: 'buildId', description: 'Choose build ID from depshield-master')
+          string(name: 'buildId', description: 'Choose build ID from depshield-master'),
+          string(name: 'tag', description: 'Tag from build')
       ])
   ])
 
   stage('Staging') {
+    deleteDir()
     copyArtifacts(projectName: 'depshield-master', selector: specific("${buildId}"))
 
     // Cannot currently use moveComponents since it only allows tag and we need to additionally restrict on format
