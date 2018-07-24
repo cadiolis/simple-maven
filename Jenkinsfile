@@ -70,9 +70,7 @@ node {
         println("Content: " + response.content)
     }
 
-    def map = [tag: tag, sha1: sha1]
-    def builder = new groovy.json.JsonBuilder(map)
-    def json = builder.toPrettyString()
+    def json = [tag: tag, sha1: sha1]
     writeJson file: 'build-info.json', json: json
     archiveArtifacts artifacts: 'build-info.json', onlyIfSuccessful: true
   }
