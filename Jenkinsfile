@@ -49,7 +49,7 @@ node {
     }
 
     //md5sum = sh(returnStdout: true, script: "(\$(md5sum '$filename'))")
-    md5sum = sh(returnStdout: true, script: "md5sum ${my_iso_file} | awk '{ print \$1 }'")
+    md5sum = sh(returnStdout: true, script: "md5sum ${filename} | awk '{ print \$1 }'")
     echo "MD5SUM of $filename: $md5sum"
 
     // associate raw with tag
