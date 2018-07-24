@@ -50,11 +50,11 @@ node {
 
     //md5sum = sh(returnStdout: true, script: "(\$(md5sum '$filename'))")
     md5sum = sh(returnStdout: true, script: "md5sum ${filename} | awk '{ print \$1 }'")
-    echo "MD5SUM of $filename: $md5sum"
+    echo "MD5SUM of $filename: '$md5sum'"
 
     // associate raw with tag
       def response = httpRequest url: "http://localhost:8081/service/rest/v1/tags/associate/${tag}?" +
-          "repository=depshield-raw-incoming&format=raw&name=my-app-1.0-depshield.tar.gz&md5=${md5sum}",
+          "repository=depshield-raw-incoming&format=raw&md5=${md5sum}&name=my-app-1.0-depshield.tar.gz",
           authentication: 'nxrm3-credentials',
           httpMode: 'POST',
           acceptType: 'APPLICATION_JSON',
