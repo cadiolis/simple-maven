@@ -56,7 +56,7 @@ node {
     // associate raw with tag
     //withCredentials([usernamePassword(credentialsId: 'nxrm3-credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
       def response = httpRequest url: "http://localhost:8081/service/rest/v1/tags/associate/${tag}?" +
-          "repository=depshield-raw-incoming&format=maven&name=depshield/my-app-1.0-depshield.tar.gz&sha256=${md5sum}",
+          "repository=depshield-raw-incoming&format=raw&name=depshield/my-app-1.0-depshield.tar.gz&md5=${md5sum}",
           authentication: nxrm3-credentials
       println("Status: " + response.status)
       println("Content: " + response.content)
