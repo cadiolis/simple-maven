@@ -48,19 +48,15 @@ node {
            "-Dwagon.toFile=my-app-1.0-depshield.tar.gz"
     }
 
-    md5sum = sh(returnStdout: true, script: "md5sum '$filename'")
+    md5sum = sh(returnStdout: true, script: "($(md5sum '$filename'))")
     echo "MD5SUM of $filename: $md5sum"
 
-    input 'Pausing. Do your manual search'
-
     // associate raw with tag
-    //withCredentials([usernamePassword(credentialsId: 'nxrm3-credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
       def response = httpRequest url: "http://localhost:8081/service/rest/v1/tags/associate/${tag}?" +
           "repository=depshield-raw-incoming&format=raw&name=my-app-1.0-depshield.tar.gz&md5=${md5sum}",
           authentication: 'nxrm3-credentials'
       println("Status: " + response.status)
       println("Content: " + response.content)
-    //}
   }
   stage('Staging') {
     input 'Deployed to incoming. Promote to staging?'
