@@ -6,16 +6,17 @@ node {
 
     commitId = sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
     commitDate =
-        sh(script: "git show -s --format=%cd --date=format:%Y%m%d-%H%M%S ${commitId}", returnStdout: true).trim()
+        sh(script: "git show -s --format=%cd --date=format:%Y%m%d%H%M%S ${commitId}", returnStdout: true).trim()
 
     def pom = readMavenPom(file: 'pom.xml')
     def version
     if (pom.version.contains('-SNAPSHOT')) {
-      version = pom.version.replace("-SNAPSHOT", ".${commitDate}.${commitId.substring(0, 7)}")
+      version = pom.version.replace("-SNAPSHOT", "")
     }
     else {
-      version = pom.version + ".${commitDate}.${commitId.substring(0, 7)}"
+      version = pom.version
     }
+    version = version + "-${commitDate}-${commitId.substring(0, 7)}"
     tag = "depshield-$version"
 
     currentBuild.displayName = "#${currentBuild.number} - ${version}"
@@ -42,19 +43,6 @@ node {
     // note: would use nexusPublisher... but it doesn't support raw (or anything but Maven) ATM
     // note: would use httpRequest... but doesn't seem to have support for file upload
     def filename = "target/my-app-1.0-depshield.tar.gz"
-    nexusArtifactUploader(
-        nexusVersion: 'nexus3',
-        protocol: 'http',
-        nexusUrl: 'localhost:8081',
-        groupId: 'depshield',
-        repository: 'depshield-raw-incoming',
-        credentialsId: 'nxrm3-credentials',
-        artifacts: [
-            [
-             file: filename]
-        ]
-    )
-    /*
     withMaven(jdk: 'JDK8u172', maven: 'M3', mavenSettingsConfig: 'nxrm3-server') {
        sh "mvn wagon:upload-single " +
            "-Dwagon.url=http://localhost:8081/repository/depshield-raw-incoming " +
@@ -62,10 +50,10 @@ node {
            "-Dwagon.fromFile=$filename " +
            "-Dwagon.toFile=my-app-1.0-depshield.tar.gz"
     }
-    */
 
+    // tag raw
     md5sum = sh(returnStdout: true, script: "md5sum ${filename} | awk '{ print \$1 }'").trim()
-    echo "MD5SUM of $filename: '$md5sum'"
+    echo "MD5SUM of '$filename': '$md5sum'"
 
     // Can take a bit for the artifact to show up in search
     retry(10) {
