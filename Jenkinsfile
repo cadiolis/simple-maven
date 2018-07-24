@@ -54,7 +54,7 @@ node {
     // tag raw
     md5sum = sh(returnStdout: true, script: "md5sum ${filename} | awk '{ print \$1 }'").trim()
     echo "MD5SUM of '$filename': '$md5sum'"
-    sha1 = sha1 $filename
+    sha1 = sha1 filename
     echo "SHA1 of '$filename': '$sha1'"
 
     // Can take a bit for the artifact to show up in search
