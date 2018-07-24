@@ -57,7 +57,8 @@ node {
           "repository=depshield-raw-incoming&format=raw&name=my-app-1.0-depshield.tar.gz&md5=${md5sum}",
           authentication: 'nxrm3-credentials',
           httpMode: 'POST',
-          acceptType: 'APPLICATION_JSON'
+          acceptType: 'APPLICATION_JSON',
+          contentType: 'APPLICATION_JSON'
       println("Status: " + response.status)
       println("Content: " + response.content)
   }
