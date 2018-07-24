@@ -48,15 +48,15 @@ node {
            "-Dwagon.toFile=depshield/my-app-1.0-depshield.tar.gz"
     }
 
-    sha256sum = sh(returnStdout: true, script: "sha256sum '$filename'")
-    echo "SHA256 of $filename: $sha256sum"
+    md5sum = sh(returnStdout: true, script: "md5sum '$filename'")
+    echo "MD5SUM of $filename: $md5sum"
 
     input 'Pausing. Do your manual search'
 
     // associate raw with tag
     //withCredentials([usernamePassword(credentialsId: 'nxrm3-credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
       def response = httpRequest url: "http://localhost:8081/service/rest/v1/tags/associate/${tag}?" +
-          "repository=depshield-raw-incoming&format=maven&name=depshield/my-app-1.0-depshield.tar.gz&sha256=${sha256}",
+          "repository=depshield-raw-incoming&format=maven&name=depshield/my-app-1.0-depshield.tar.gz&sha256=${md5sum}",
           authentication: nxrm3-credentials
       println("Status: " + response.status)
       println("Content: " + response.content)
