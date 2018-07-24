@@ -43,7 +43,7 @@ node {
     withMaven(jdk: 'JDK8u172', maven: 'M3', mavenSettingsConfig: 'nxrm3-server') {
        sh "mvn wagon:upload-single " +
            "-Dwagon.url=http://localhost:8081/repository/depshield-raw-incoming " +
-           "-Dwagon.serverId=depshield-nxrm " +
+           "-Dwagon.serverId=nxrm3-server " +
            "-Dwagon.fromFile=$filename " +
            "-Dwagon.toFile=depshield/my-app-1.0-depshield.tar.gz"
     }
