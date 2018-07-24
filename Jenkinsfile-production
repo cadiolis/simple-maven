@@ -1,0 +1,26 @@
+stage('Production') {
+  input 'Deployed to staging. Promote to production?'
+
+  //moveComponents destination: 'test-maven-production', nexusInstanceId: 'nxrm3', tagName: tag
+  // promote raw
+  def response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/depshield-raw-production?" +
+      "tag=${tag}&format=raw",
+      authentication: 'nxrm3-credentials',
+      httpMode: 'POST',
+      validResponseCodes: '200',
+      acceptType: 'APPLICATION_JSON',
+      contentType: 'APPLICATION_JSON'
+  println("Status: " + response.status)
+  println("Content: " + response.content)
+
+  // promote maven (will be docker)
+  response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/test-maven-production?" +
+      "tag=${tag}&format=maven2",
+      authentication: 'nxrm3-credentials',
+      httpMode: 'POST',
+      validResponseCodes: '200',
+      acceptType: 'APPLICATION_JSON',
+      contentType: 'APPLICATION_JSON'
+  println("Status: " + response.status)
+  println("Content: " + response.content)
+}
