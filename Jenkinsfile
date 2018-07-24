@@ -54,6 +54,8 @@ node {
     // tag raw
     md5sum = sh(returnStdout: true, script: "md5sum ${filename} | awk '{ print \$1 }'").trim()
     echo "MD5SUM of '$filename': '$md5sum'"
+    sha1 = sha1 $filename
+    echo "SHA1 of '$filename': '$sha1'"
 
     // Can take a bit for the artifact to show up in search
     retry(10) {
@@ -69,66 +71,5 @@ node {
         println("Status: " + response.status)
         println("Content: " + response.content)
     }
-  }
-  stage('Staging') {
-    input 'Deployed to incoming. Promote to staging?'
-
-    // Cannot currently use moveComponents since it only allows tag and we need to additionally restrict on format
-    // NXRM Core team is working on adding this for us
-    moveComponents destination: 'depshield-raw-staging', nexusInstanceId: 'nxrm3', search: [ 'tag': tag, 'format': 'raw' ]
-    moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', search: [ 'tag': tag, 'format': 'maven2' ]
-
-    // in the meantime, direct rest calls
-
-    /*
-    // promote raw
-    def response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/depshield-raw-staging?" +
-        "tag=${tag}&format=raw",
-        authentication: 'nxrm3-credentials',
-        httpMode: 'POST',
-        validResponseCodes: '200',
-        acceptType: 'APPLICATION_JSON',
-        contentType: 'APPLICATION_JSON'
-    println("Status: " + response.status)
-    println("Content: " + response.content)
-
-    // promote maven (will be docker)
-    response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/test-maven-staging?" +
-        "tag=${tag}&format=maven2",
-        authentication: 'nxrm3-credentials',
-        httpMode: 'POST',
-        validResponseCodes: '200',
-        acceptType: 'APPLICATION_JSON',
-        contentType: 'APPLICATION_JSON'
-    println("Status: " + response.status)
-    println("Content: " + response.content)
-    */
-  }
-
-  stage('Production') {
-    input 'Deployed to staging. Promote to production?'
-
-    //moveComponents destination: 'test-maven-production', nexusInstanceId: 'nxrm3', tagName: tag
-    // promote raw
-    def response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/depshield-raw-production?" +
-        "tag=${tag}&format=raw",
-        authentication: 'nxrm3-credentials',
-        httpMode: 'POST',
-        validResponseCodes: '200',
-        acceptType: 'APPLICATION_JSON',
-        contentType: 'APPLICATION_JSON'
-    println("Status: " + response.status)
-    println("Content: " + response.content)
-
-    // promote maven (will be docker)
-    response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/test-maven-production?" +
-        "tag=${tag}&format=maven2",
-        authentication: 'nxrm3-credentials',
-        httpMode: 'POST',
-        validResponseCodes: '200',
-        acceptType: 'APPLICATION_JSON',
-        contentType: 'APPLICATION_JSON'
-    println("Status: " + response.status)
-    println("Content: " + response.content)
   }
 }
