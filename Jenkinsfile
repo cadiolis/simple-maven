@@ -38,34 +38,31 @@ node {
                                       packaging : 'jar', version: '1.0']]],
         tagName: tag
 
-    // push raw using curl like a boss
-    def response = sh returnStdout: true, script: """curl -s -u admin:admin123 \
-	-X POST 'http://localhost:8081/service/rest/v1/components?repository=depshield-raw-incoming' \
-	-F raw.directory=depshield \
-	-F raw.asset1=@target/my-app-1.0-depshield.tar.gz \
-	-F raw.asset1.filename=myapp-1.0-depshield.tar.gz \
-	-F raw.tag=$tag"""
-    echo "RESPONSE: $response"
-    /*
-    // push raw and tag (manual use of nexus-java-api)
-    ServerConfig config = new ServerConfig(new URI('http://localhost:8081'), new Authentication('admin', 'admin123'))
-    RepositoryManagerV3Client client = RepositoryManagerV3ClientBuilder.create().withServerConfig(config).build()
+    // push raw
+    def filename = "target/my-app-1.0-depshield.tar.gz"
+    withMaven(jdk: 'JDK8u172', maven: 'M3', mavenSettingsConfig: 'nxrm3-server') {
+       sh """mvn wagon:upload-single 
+           -Dwagon.url=http://localhost:8081/repository/depshield-raw-incoming 
+           -Dwagon.serverId=depshield-nxrm 
+           -Dwagon.fromFile=$filename
+           -Dwagon.toFile=depshield/my-app-1.0-depshield.tar.gz"""
+    }
 
-    // raw asset
-    DefaultAsset rawAsset = new DefaultAsset('my-app-1.0-SNAPSHOT-depshield.tar.gz',
-        Files.newInputStream(Paths.get("$WORKSPACE/target/my-app-1.0-SNAPSHOT-depshield.tar.gz")))
-    rawAsset.addAttribute('filename', 'my-app-1.0-SNAPSHOT-depshield.tar.gz')
+    sha256sum = sh(returnStdout: true, script: "sha256sum '$filename'")
+    echo "SHA256 of $filename: $sha256sum"
 
-    // create raw component
-    DefaultComponent rawComponent = new DefaultComponent('raw')
-    rawComponent.addAttribute('directory', '/depshield')
-    rawComponent.addAsset(rawAsset)
+    input 'Pausing. Do your manual search'
 
-    client.upload('depshield-raw-incoming', rawComponent, tag)
-    */
+    // associate raw with tag
+    //withCredentials([usernamePassword(credentialsId: 'nxrm3-credentials', passwordVariable: 'PASSWORD', usernameVariable: 'USERNAME')]) {
+      def response = httpRequest url: "http://localhost:8081/service/rest/v1/tags/associate/${tag}?" +
+          "repository=depshield-raw-incoming&format=maven&name=depshield/my-app-1.0-depshield.tar.gz&sha256=${sha256}",
+          authentication: nxrm3-credentials
+      println("Status: " + response.status)
+      println("Content: " + response.content)
+    //}
   }
   stage('Staging') {
-
     input 'Deployed to incoming. Promote to staging?'
     moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', tagName: tag
   }
@@ -73,6 +70,5 @@ node {
   stage('Production') {
     input 'Deployed to staging. Promote to production?'
     moveComponents destination: 'test-maven-production', nexusInstanceId: 'nxrm3', tagName: tag
-
   }
 }
