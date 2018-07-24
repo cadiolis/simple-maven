@@ -1,27 +1,11 @@
-def builds = []
-
-def job = jenkins.model.Jenkins.instance.getItem('depshield-master')
-job.builds.each {
-  def build = it
-  echo "${build.displayName}: ${it.result}"
-  if (it.getResult().toString().equals("SUCCESS")) {
-    it.badgeActions.each {
-      builds.add(build.displayName[1..-1])
-    }
-  }
-}
-
-builds.unique()
-
 properties([
     parameters([
-        choice(name: 'buildId', description: 'Choose Master Build', choices: builds)
+        string(name: 'buildId', description: 'Choose build ID from depshield-master')
     ])
 ])
 
 stage('Staging') {
-  def built = build('depshield-master');  // https://plugins.jenkins.io/pipeline-build-step
-  copyArtifacts(projectName: 'depshield-master', selector: specific("${built.number}"))
+  copyArtifacts(projectName: 'depshield-master', selector: specific("${buildId}"))
 
   // Cannot currently use moveComponents since it only allows tag and we need to additionally restrict on format
   // NXRM Core team is working on adding this for us
