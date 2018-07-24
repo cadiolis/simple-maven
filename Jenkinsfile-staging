@@ -14,7 +14,7 @@ builds.unique()
 
 properties([
     parameters([
-        choice(name: buildId, description: 'Choose Master Build', choices: ${builds})
+        choice(name: 'buildId', description: 'Choose Master Build', choices: ${builds})
     ])
 ])
 
