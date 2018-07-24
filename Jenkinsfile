@@ -53,6 +53,7 @@ node {
 
     // Can take a bit for the artifact to show up in search
     retry(10) {
+      sleep 1
       // associate raw with tag
       def response = httpRequest url: "http://localhost:8081/service/rest/v1/tags/associate/${tag}?" +
             "repository=depshield-raw-incoming&format=raw&md5=${md5sum}&name=my-app-1.0-depshield.tar.gz",
@@ -63,12 +64,34 @@ node {
             contentType: 'APPLICATION_JSON'
         println("Status: " + response.status)
         println("Content: " + response.content)
-        sleep 1
     }
   }
   stage('Staging') {
     input 'Deployed to incoming. Promote to staging?'
-    moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', tagName: tag
+
+    //moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', tagName: tag
+
+    // promote raw
+    def response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/depshield-raw-staging?" +
+        "tag=${tag}&format=raw",
+        authentication: 'nxrm3-credentials',
+        httpMode: 'POST',
+        validResponseCodes: '200',
+        acceptType: 'APPLICATION_JSON',
+        contentType: 'APPLICATION_JSON'
+    println("Status: " + response.status)
+    println("Content: " + response.content)
+
+    // promote maven (will be docker)
+    response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/test-maven-staging?" +
+        "tag=${tag}&format=maven",
+        authentication: 'nxrm3-credentials',
+        httpMode: 'POST',
+        validResponseCodes: '200',
+        acceptType: 'APPLICATION_JSON',
+        contentType: 'APPLICATION_JSON'
+    println("Status: " + response.status)
+    println("Content: " + response.content)
   }
 
   stage('Production') {
