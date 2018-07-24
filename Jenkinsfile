@@ -48,21 +48,23 @@ node {
            "-Dwagon.toFile=my-app-1.0-depshield.tar.gz"
     }
 
-    //md5sum = sh(returnStdout: true, script: "(\$(md5sum '$filename'))")
     md5sum = sh(returnStdout: true, script: "md5sum ${filename} | awk '{ print \$1 }'").trim()
     echo "MD5SUM of $filename: '$md5sum'"
 
-    sleep 5
-
-    // associate raw with tag
+    // Can take a bit for the artifact to show up in search
+    retry(10) {
+      // associate raw with tag
       def response = httpRequest url: "http://localhost:8081/service/rest/v1/tags/associate/${tag}?" +
-          "repository=depshield-raw-incoming&format=raw&md5=${md5sum}&name=my-app-1.0-depshield.tar.gz",
-          authentication: 'nxrm3-credentials',
-          httpMode: 'POST',
-          acceptType: 'APPLICATION_JSON',
-          contentType: 'APPLICATION_JSON'
-      println("Status: " + response.status)
-      println("Content: " + response.content)
+            "repository=depshield-raw-incoming&format=raw&md5=${md5sum}&name=my-app-1.0-depshield.tar.gz",
+            authentication: 'nxrm3-credentials',
+            httpMode: 'POST',
+            validResponseCodes: '204',
+            acceptType: 'APPLICATION_JSON',
+            contentType: 'APPLICATION_JSON'
+        println("Status: " + response.status)
+        println("Content: " + response.content)
+        sleep 1
+    }
   }
   stage('Staging') {
     input 'Deployed to incoming. Promote to staging?'
