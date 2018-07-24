@@ -75,11 +75,12 @@ node {
 
     // Cannot currently use moveComponents since it only allows tag and we need to additionally restrict on format
     // NXRM Core team is working on adding this for us
-    //moveComponents destination: 'depshield-raw-staging', nexusInstanceId: 'nxrm3', tagName: tag
-    //moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', tagName: tag
+    moveComponents destination: 'depshield-raw-staging', nexusInstanceId: 'nxrm3', search: [ 'tag': tag, 'format': 'raw' ]
+    moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', search: [ 'tag': tag, 'format': 'maven2' ]
 
     // in the meantime, direct rest calls
 
+    /*
     // promote raw
     def response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/depshield-raw-staging?" +
         "tag=${tag}&format=raw",
@@ -101,6 +102,7 @@ node {
         contentType: 'APPLICATION_JSON'
     println("Status: " + response.status)
     println("Content: " + response.content)
+    */
   }
 
   stage('Production') {
