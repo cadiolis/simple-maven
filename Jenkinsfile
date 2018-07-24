@@ -1,3 +1,5 @@
+import groovy.json.JsonOutput
+
 node {
   def commitId, tag, commitDate
 
@@ -70,8 +72,10 @@ node {
         println("Content: " + response.content)
     }
 
-    def json = "{'tag': '${tag}'}"
-    writeJSON file: 'build-info.json', json: json
+    def map = [tag: tag, sha1: sha1]
+    def json = JsonOutput.toJson(map)
+    //writeJSON file: 'build-info.json', json: json
+    writeFile(file: 'build-info.json', text: json)
     archiveArtifacts artifacts: 'build-info.json', onlyIfSuccessful: true
   }
 }
