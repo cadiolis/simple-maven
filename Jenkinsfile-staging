@@ -1,14 +1,17 @@
 node {
   properties([
       parameters([
-          string(name: 'buildId', description: 'Choose build ID from depshield-master'),
-          string(name: 'tag', description: 'Tag from build')
+          string(name: 'buildId', description: 'Choose build ID from depshield-master')
       ])
   ])
 
   stage('Staging') {
     deleteDir()
     copyArtifacts(projectName: 'depshield-master', selector: specific("${buildId}"))
+
+    def props = readJSON file: 'build-info.json'
+    echo props['tag']
+    echo props['sha1']
 
     // Cannot currently use moveComponents since it only allows tag and we need to additionally restrict on format
     // NXRM Core team is working on adding this for us
