@@ -71,7 +71,7 @@ node {
     }
 
     def json = [tag: tag, sha1: sha1]
-    writeJson file: 'build-info.json', json: json
+    writeJSON file: 'build-info.json', json: json
     archiveArtifacts artifacts: 'build-info.json', onlyIfSuccessful: true
   }
 }
