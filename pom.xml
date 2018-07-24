@@ -11,6 +11,12 @@
   <name>my-app</name>
   <url>http://maven.apache.org</url>
 
+  <scm>
+    <connection>scm:git:git://github.com/collinpeters/simple-maven.git</connection>
+    <developerConnection>scm:git:git@github.com:collinpeters/simple-maven.git</developerConnection>
+    <url>https://github.com/collinpeters/simple-maven</url>
+  </scm>
+
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
