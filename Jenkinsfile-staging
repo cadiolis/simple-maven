@@ -1,10 +1,11 @@
 stage('Staging') {
-  input 'Deployed to incoming. Promote to staging?'
+  def built = build('depshield-master');  // https://plugins.jenkins.io/pipeline-build-step
+  copyArtifacts(projectName: 'depshield-master', selector: specific("${built.number}"));
 
   // Cannot currently use moveComponents since it only allows tag and we need to additionally restrict on format
   // NXRM Core team is working on adding this for us
-  moveComponents destination: 'depshield-raw-staging', nexusInstanceId: 'nxrm3', search: [ 'tag': tag, 'format': 'raw' ]
-  moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', search: [ 'tag': tag, 'format': 'maven2' ]
+  //moveComponents destination: 'depshield-raw-staging', nexusInstanceId: 'nxrm3', search: [ 'tag': tag, 'format': 'raw' ]
+  //moveComponents destination: 'test-maven-staging', nexusInstanceId: 'nxrm3', search: [ 'tag': tag, 'format': 'maven2' ]
 
   // in the meantime, direct rest calls
 
