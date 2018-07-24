@@ -84,7 +84,7 @@ node {
 
     // promote maven (will be docker)
     response = httpRequest url: "http://localhost:8081/service/rest/v1/staging/move/test-maven-staging?" +
-        "tag=${tag}&format=maven",
+        "tag=${tag}&format=maven2",
         authentication: 'nxrm3-credentials',
         httpMode: 'POST',
         validResponseCodes: '200',
