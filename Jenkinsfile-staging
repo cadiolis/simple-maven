@@ -1,4 +1,5 @@
 node {
+  def tag
   properties([
       parameters([
           string(name: 'buildId', description: 'Choose build ID from depshield-master')
@@ -10,7 +11,7 @@ node {
     copyArtifacts(projectName: 'depshield-master', selector: specific("${buildId}"))
 
     def props = readJSON file: 'build-info.json'
-    def tag = props['tag']
+    tag = props['tag']
     assert tag != null
 
     echo "Tag: $tag"
