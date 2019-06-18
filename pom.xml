@@ -26,7 +26,7 @@
     <dependency>
       <groupId>com.sonatype.nexus</groupId>
       <artifactId>nexus-platform-api</artifactId>
-      <version>3.2.20180720-113856.04ab436</version>
+      <version>3.6.20190415-090157.2c3eb9f</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
